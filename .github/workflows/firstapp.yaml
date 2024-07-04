@@ -6,17 +6,13 @@ name: firstapp
     workflow_dispatch: {}
 env:
     ACR_RESOURCE_GROUP: aks-rg
-    AZURE_CONTAINER_REGISTRY: acrworkflow1719737844636
+    AZURE_CONTAINER_REGISTRY: acrworkflow1720085592705
     CLUSTER_NAME: mytcs2024
     CLUSTER_RESOURCE_GROUP: aks-rg
-    CONTAINER_NAME: image-workflow-1719737844636
+    CONTAINER_NAME: image-workflow-1720085592705
     DEPLOYMENT_MANIFEST_PATH: |
-        ./docker-compose_mysql_phpMyAdmin.yml
-        ./docker-compose_mysql.yml
-        ./docker-compose_tomcat.yml
-        ./docker-compose.yml
-        ./Dockerfile
-        ./Jenkinsfile
+        manifests/deployment.yaml
+        manifests/service.yaml
 jobs:
     buildImage:
         permissions:
@@ -32,7 +28,7 @@ jobs:
                 subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
                 tenant-id: ${{ secrets.AZURE_TENANT_ID }}
             - name: Build and push image to ACR
-              run: az acr build --image ${{ env.CONTAINER_NAME }}:${{ github.sha }} --registry ${{ env.AZURE_CONTAINER_REGISTRY }} -g ${{ env.ACR_RESOURCE_GROUP }} -f ./Dockerfile ./
+              run: az acr build --image ${{ env.CONTAINER_NAME }}:${{ github.sha }} --registry ${{ env.AZURE_CONTAINER_REGISTRY }} -g ${{ env.ACR_RESOURCE_GROUP }} -f Dockerfile ./
     deploy:
         permissions:
             actions: read
@@ -66,4 +62,4 @@ jobs:
                 action: deploy
                 images: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:${{ github.sha }}
                 manifests: ${{ env.DEPLOYMENT_MANIFEST_PATH }}
-                namespace: namespace-workflow-1719737844636
+                namespace: namespace-workflow-1720085592705
